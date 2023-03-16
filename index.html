@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="main.css">
+    <title>CREDO NEWS</title>
+</head>
+
+<body>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="addnews.html">Add News</a></li>
+            <!-- <li><a href="#">Services</a></li> -->
+        </ul>
+    </nav>
+
+    <!-- Slider -->
+    <div class="slider">
+        <div class="slider-imgs" id="dataimg">
+
+        </div>
+        <button class="left">&lt;</button>
+        <button class="right">&gt;</button>
+    </div>
+    <!-- Slider ends -->
+
+    <section>
+        <div class="flex-container" id="data"></div>
+        <div style="text-align:center" id="pagination">
+            <button id="prevBtn" disabled class="btn" style="background: grey;">Prev</button>
+            <button id="nextBtn" class="btn">Next</button>
+            <br>
+            <br>
+            <br>
+        </div>
+    </section>
+
+
+    <script>
+        let currentPage = 1;
+        const itemsPerPage = 3;
+        const url = `https://64105fcb864814e5b64f9a34.mockapi.io/credo/v1/news?page=${currentPage}&limit=${itemsPerPage}`;
+
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        prevBtn.addEventListener('click', () => {
+            currentPage--;
+            fetchData();
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentPage++;
+            fetchData();
+        });
+
+        function fetchData() {
+            const url = `https://64105fcb864814e5b64f9a34.mockapi.io/credo/v1/news?page=${currentPage}&limit=${itemsPerPage}`;
+
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json'
+                },
+            }).then(res => {
+                if (res.ok) {
+                    return res.json();
+                }
+            }).then(data => {
+
+                // console.log(data);
+                document.getElementById('data').innerHTML = '';
+                data.forEach(news => {
+
+                    const markup = `
+                    <div class="flex-column">
+                        <img style="width: 100%;" src="${news.avatar}" alt="">
+                        <h1 style="font-weight:bold">${news.title}</h1>
+                        <p style="font-weight: bold;">Author: ${news.author}</p>
+                        
+                        <p style="font-size:14px; text-align: justify;">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ipsa culpa libero voluptatem provident...</p>
+                        <br /><hr><br />
+                        <div style="text-align: center;">
+                        
+                            <button onclick="window.location.assign('singlenews.html?id=${news.id}')" class="btn">View</button> 
+                        </div> <br /><br /><br /><br /><br /> 
+                    </div> 
+                    `;
+                    document.getElementById('data').insertAdjacentHTML('beforeend', markup);
+                });
+                updatePagination();
+            }).catch(error => {
+
+                console.log(error);
+            });
+        }
+
+        function updatePagination() {
+            if (currentPage === 1) {
+                prevBtn.disabled = true;
+            } else {
+                prevBtn.disabled = false;
+            }
+        }
+
+        fetchData();
+    </script>
+    <script src="script.js"></script>
+</body>
+
+
+</html>

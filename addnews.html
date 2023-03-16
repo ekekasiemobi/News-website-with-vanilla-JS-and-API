@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CREDO NEWS</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+
+    <nav>
+        <ul>
+          <li><a href="index.html">Back to Home</a></li>
+        </ul>
+    </nav>
+
+
+    <form id="newsForm">
+        <div class="form-group">
+            <label for="author">Author:</label>
+            <input type="text" id="author" name="author" required>
+        </div>
+      
+        <div class="form-group">
+            <label for="avatar">avatar:</label>
+            <input type="text" id="avatar" name="avatar" required>
+        </div>
+
+        <div class="form-group">
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" required>
+        </div>
+
+        <div class="form-group">
+            <label for="url">URL:</label>
+            <input type="text" id="url" name="url" required>
+        </div>
+
+        <div style="text-align: center;">
+            <button type="submit" id="addnews" class="btn">Add News</button>
+            <button type="submit" id="updatenews" class="btn">Update News</button>
+        </div>
+
+    </form>
+
+      <script>
+        // ADD NEWS 
+        const endpoint = 'https://64105fcb864814e5b64f9a34.mockapi.io/credo/v1/news';
+        const newsForm = document.getElementById('newsForm');
+
+        newsForm.addEventListener('submit', function(event) {
+        event.preventDefault(); // prevent the form from submitting normally
+
+        const formData = new FormData(newsForm); // get form data
+
+        const taskData = {
+            author: formData.get('author'),
+            avatar: formData.get('avatar'),
+            title: formData.get('title'),
+            url: formData.get('url'),
+        };
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', endpoint);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+
+        xhr.onload = function() {
+            if (xhr.status === 201) {
+            // console.log('News added successfully!');
+            alert('News added successfully!');
+            window.location.assign('index.html');
+            // newsForm.reset(); // clear form inputs on successful submission
+            } else {
+            console.error('Failed to add news');
+            }
+        };
+
+        xhr.send(JSON.stringify(taskData)); // send task data to API as JSON
+        });
+
+
+
+
+
+        
+         ////// UPDATE NEWS //////
+    // Get the URL parameter (e.g. using URLSearchParams)
+      const commenturlParams = new URLSearchParams(window.location.search);
+      const id = commenturlParams.get('id');
+      const avatar = commenturlParams.get('avatar');
+      const title = commenturlParams.get('title');
+      const author = commenturlParams.get('author');
+      const url = commenturlParams.get('url');
+
+    //   console.log(id, avatar, title, author, url);
+
+      const authorresult = document.getElementById("author");
+      authorresult.value = author;
+
+      const avatarresult = document.getElementById("avatar");
+      avatarresult.value = avatar;
+
+      const titleresult = document.getElementById("title");
+      titleresult.value = title;
+
+      const urlresult = document.getElementById("url");
+      urlresult.value = url;
+
+
+      if (id === id) {
+        document.getElementById('addnews').style.display = 'none';
+      }else{
+        document.getElementById('updatenews').style.display = 'none';
+      }
+
+      // Get the news form element
+      const NewsupdateForm = document.getElementById('newsForm');
+
+      // Add an event listener to the news form
+      updatenews.addEventListener('click', (event) => {
+        event.preventDefault();
+
+        // Get the new news details from the form
+        const avatar = document.getElementById('avatar').value;
+        const title = document.getElementById('title').value;
+        const author = document.getElementById('author').value;
+        const url = document.getElementById('url').value;
+
+
+        // Fetch the existing news from the API
+        fetch(`https://64105fcb864814e5b64f9a34.mockapi.io/credo/v1/news/${id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(news => {
+          // Update the news object with the new values
+          news.author = author;
+          news.avatar = avatar;
+          news.title = title;
+          news.url = url;
+
+          // Use the HTTP PUT method to update the news in the API
+          fetch(`https://64105fcb864814e5b64f9a34.mockapi.io/credo/v1/news/${id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(news)
+          })
+          .then(response => {
+            // Display a success message to the user
+            alert('News updated successfully!');
+            window.location.assign(`singlenews.html?id=${id}`);
+          })
+          .catch(error => {
+            console.error('Error updating news:', error);
+            alert('Error updating news. Please try again later.');
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching news:', error);
+          alert('Error fetching news. Please try again later.');
+        });
+      });
+
+      </script>
+</body>
+</html>
